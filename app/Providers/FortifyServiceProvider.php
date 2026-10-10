@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 
@@ -35,6 +36,15 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        // Fortify memanggil closure ini saat pengguna membuka /login,
+        // lalu kita render halaman Vue "Auth/Login" lewat Inertia.
+        Fortify::loginView(fn () => Inertia::render('Auth/Login', [
+            // Status flash (misalnya pesan "password berhasil direset")
+            'status' => session('status'),
+        ]));
+
+        // Batasi 5 percobaan login per menit untuk kombinasi email + IP,
+        // supaya tidak mudah ditebak dengan brute force.
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 

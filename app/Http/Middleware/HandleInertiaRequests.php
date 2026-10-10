@@ -37,7 +37,11 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+
+            // Hanya kolom yang dibutuhkan UI; jangan kirim seluruh model
+            'auth' => [
+                'user' => $request->user()?->only(['id', 'username', 'first_name', 'last_name', 'email']),
+            ],
         ];
     }
 }
