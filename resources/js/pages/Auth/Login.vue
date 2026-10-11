@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
+import { useForm, Head, Link } from '@inertiajs/vue3'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 
 // Halaman ini tampil di dalam layout tamu
@@ -57,7 +57,7 @@ function submit() {
 
             <!-- Hanya tampil bila fitur reset password aktif -->
             <Link v-if="canResetPassword" href="/forgot-password" class="text-gray-600 hover:underline">
-            Lupa password?
+                Lupa password?
             </Link>
         </div>
 
