@@ -9,6 +9,7 @@ defineOptions({ layout: GuestLayout })
 defineProps({
     status: String,
     canResetPassword: Boolean,
+    canRegister: Boolean,
 })
 
 // Form reaktif: menyimpan input, error validasi, dan status pengiriman
@@ -65,5 +66,10 @@ function submit() {
             class="w-full rounded bg-gray-800 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
             Masuk
         </button>
+
+        <!-- Tampil hanya jika fitur registrasi aktif di config Fortify -->
+        <div v-if="canRegister" class="text-center text-sm">
+            <Link href="/register" class="text-gray-600 hover:underline">Belum punya akun? Daftar</Link>
+        </div>
     </form>
 </template>

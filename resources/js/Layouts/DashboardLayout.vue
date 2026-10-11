@@ -29,6 +29,9 @@ function logout() {
 
                 <div class="flex items-center gap-4 text-sm text-gray-600">
                     <span>{{ displayName }}</span>
+                    <!-- Tautan ke halaman profil -->
+                    <Link href="/profile" class="hover:underline">Profil</Link>
+
                     <button type="button" class="text-red-600 hover:underline" @click="logout">
                         Keluar
                     </button>
