@@ -39,10 +39,14 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        // Halaman pendaftaran
+        Fortify::registerView(fn () => Inertia::render('Auth/Register'));
+
         // Fortify memanggil closure ini saat pengguna membuka /login,
         // lalu kita render halaman Vue "Auth/Login" lewat Inertia.
         Fortify::loginView(fn () => Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
+            'canRegister' => Route::has('register'),
             // Status flash (misalnya pesan "password berhasil direset")
             'status' => session('status'),
         ]));
@@ -73,6 +77,11 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('Auth/ResetPassword', [
             'token' => $request->route('token'),
             'email' => $request->query('email'),
+        ]));
+
+        // Halaman pemberitahuan: "cek email Anda untuk verifikasi"
+        Fortify::verifyEmailView(fn () => Inertia::render('Auth/VerifyEmail', [
+            'status' => session('status'),
         ]));
 
         // Batasi 5 percobaan login per menit untuk kombinasi email + IP,
