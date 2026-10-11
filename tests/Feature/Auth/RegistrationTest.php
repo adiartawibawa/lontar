@@ -32,6 +32,11 @@ test('pengguna baru dapat mendaftar', function () {
     expect($user)->not->toBeNull();
     expect($user->username)->toBe('siti_aminah');
     expect($user->hasVerifiedEmail())->toBeFalse();
+
+    // Pendaftar baru otomatis berperan `user`, bukan admin
+    expect($user->hasRole('user'))->toBeTrue();
+    expect($user->hasRole('admin'))->toBeFalse();
+
     $this->assertAuthenticatedAs($user);
 
     // Tautan aktivasi harus terkirim ke email pendaftar
