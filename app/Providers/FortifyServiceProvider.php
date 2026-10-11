@@ -6,9 +6,12 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -39,14 +42,45 @@ class FortifyServiceProvider extends ServiceProvider
         // Fortify memanggil closure ini saat pengguna membuka /login,
         // lalu kita render halaman Vue "Auth/Login" lewat Inertia.
         Fortify::loginView(fn () => Inertia::render('Auth/Login', [
+            'canResetPassword' => Route::has('password.request'),
             // Status flash (misalnya pesan "password berhasil direset")
             'status' => session('status'),
+        ]));
+
+        /**
+         * Logika autentikasi: field `login` dicocokkan dengan kolom email
+         * ATAU username. Jika pengguna ditemukan dan password cocok,
+         * kembalikan pengguna tersebut; jika tidak, kembalikan null (login gagal).
+         */
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->input('login'))
+                ->orWhere('username', $request->input('login'))
+                ->first();
+
+            if ($user && Hash::check($request->input('password'), $user->password)) {
+                return $user;
+            }
+
+            return null;
+        });
+
+        // Halaman untuk meminta tautan reset password
+        Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword', [
+            'status' => session('status'),
+        ]));
+
+        // Halaman untuk memasukkan password baru (token dan email datang dari tautan di email)
+        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('Auth/ResetPassword', [
+            'token' => $request->route('token'),
+            'email' => $request->query('email'),
         ]));
 
         // Batasi 5 percobaan login per menit untuk kombinasi email + IP,
         // supaya tidak mudah ditebak dengan brute force.
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(
+                Str::lower($request->input(Fortify::username())).'|'.$request->ip()
+            );
 
             return Limit::perMinute(5)->by($throttleKey);
         });
