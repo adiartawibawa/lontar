@@ -41,6 +41,11 @@ class HandleInertiaRequests extends Middleware
             // Hanya kolom yang dibutuhkan UI; jangan kirim seluruh model
             'auth' => [
                 'user' => $request->user()?->only(['id', 'username', 'first_name', 'last_name', 'email']),
+
+                // Hanya untuk menampilkan/menyembunyikan menu di UI.
+                // Keamanan sebenarnya tetap ditegakkan di server lewat middleware.
+                'roles' => $request->user()?->getRoleNames()->values() ?? [],
+                'permissions' => $request->user()?->getAllPermissions()->pluck('name')->values() ?? [],
             ],
         ];
     }

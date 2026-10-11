@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +15,16 @@ use Tests\TestCase;
 |
 */
 
+/*
+ * Semua test Feature memakai TestCase Laravel dan database yang direset.
+ * Sebelum tiap test: peran/permission dasar dibuat,
+ * sebab registrasi memerlukan peran `user` dan area admin memerlukan `users.manage`.
+ */
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        $this->seed(RolePermissionSeeder::class);
+    })
     ->in('Feature');
 
 /*
