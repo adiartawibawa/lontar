@@ -64,6 +64,17 @@ class FortifyServiceProvider extends ServiceProvider
             return null;
         });
 
+        // Halaman untuk meminta tautan reset password
+        Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword', [
+            'status' => session('status'),
+        ]));
+
+        // Halaman untuk memasukkan password baru (token dan email datang dari tautan di email)
+        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('Auth/ResetPassword', [
+            'token' => $request->route('token'),
+            'email' => $request->query('email'),
+        ]));
+
         // Batasi 5 percobaan login per menit untuk kombinasi email + IP,
         // supaya tidak mudah ditebak dengan brute force.
         RateLimiter::for('login', function (Request $request) {
