@@ -11,6 +11,10 @@ const user = computed(() => page.props.auth.user)
 // Nama yang ditampilkan di header (gabungan nama depan dan belakang)
 const displayName = computed(() => `${user.value.first_name} ${user.value.last_name}`)
 
+// Menu Admin hanya tampil jika pengguna punya permission `users.manage`.
+// Ini hanya pengaturan tampilan; akses tetap dijaga middleware di server.
+const canManageUsers = computed(() => page.props.auth.permissions.includes('users.manage'))
+
 /**
  * Keluar dari aplikasi lewat rute POST /logout milik Fortify.
  * Memakai POST (bukan link biasa) agar terlindung CSRF.
@@ -29,6 +33,9 @@ function logout() {
 
                 <div class="flex items-center gap-4 text-sm text-gray-600">
                     <span>{{ displayName }}</span>
+
+                    <Link v-if="canManageUsers" href="/admin" class="hover:underline">Admin</Link>
+
                     <!-- Tautan ke halaman profil -->
                     <Link href="/profile" class="hover:underline">Profil</Link>
 
