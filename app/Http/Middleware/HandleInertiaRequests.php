@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -50,6 +51,11 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
             ],
+            // Nama aplikasi (dari APP_NAME) untuk logo dan footer
+            'appName' => config('app.name'),
+
+            // Menampilkan tombol "Daftar" hanya jika fitur registrasi aktif
+            'canRegister' => Route::has('register'),
         ];
     }
 }
