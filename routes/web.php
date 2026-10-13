@@ -3,7 +3,8 @@
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome');
+// Halaman depan publik
+Route::inertia('/', 'Landing')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
