@@ -44,4 +44,12 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * State: pengguna dengan akun nonaktif.
+     */
+    public function deactivated(): static
+    {
+        return $this->state(fn () => ['deactivated_at' => now()]);
+    }
 }

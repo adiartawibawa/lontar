@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -53,7 +54,10 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Membuat pengguna berperan admin untuk keperluan test.
+ */
+function buatAdmin(): User
 {
-    // ..
+    return User::factory()->create()->assignRole('admin');
 }
