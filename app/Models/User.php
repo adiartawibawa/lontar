@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -29,7 +30,35 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'deactivated_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Apakah akun ini sedang dinonaktifkan oleh admin?
+     */
+    public function isDeactivated(): bool
+    {
+        return $this->deactivated_at !== null;
+    }
+
+    /**
+     * Scope: hanya akun yang aktif. Pemakaian: User::active()->...
+     */
+    public function scopeActive(Builder $query): void
+    {
+        $query->whereNull('deactivated_at');
+    }
+
+    /**
+     * Apakah pengguna ini satu-satunya admin yang aktif?
+     * Dipakai untuk mencegah sistem kehilangan admin terakhir.
+     */
+    public function isLastActiveAdmin(): bool
+    {
+        return $this->hasRole('admin')
+            && ! $this->isDeactivated()
+            && User::role('admin')->active()->count() === 1;
     }
 }

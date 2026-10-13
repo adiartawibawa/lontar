@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
@@ -62,6 +63,14 @@ class FortifyServiceProvider extends ServiceProvider
                 ->first();
 
             if ($user && Hash::check($request->input('password'), $user->password)) {
+                // Pesan khusus hanya diberikan setelah password benar,
+                // sehingga tidak membocorkan status akun kepada orang asing.
+                if ($user->isDeactivated()) {
+                    throw ValidationException::withMessages([
+                        Fortify::username() => 'Akun Anda dinonaktifkan. Hubungi admin.',
+                    ]);
+                }
+
                 return $user;
             }
 
