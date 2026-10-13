@@ -34,7 +34,7 @@ function logout() {
                 <div class="flex items-center gap-4 text-sm text-gray-600">
                     <span>{{ displayName }}</span>
 
-                    <Link v-if="canManageUsers" href="/admin" class="hover:underline">Admin</Link>
+                    <Link v-if="canManageUsers" href="/admin/users" class="hover:underline">Pengguna</Link>
 
                     <!-- Tautan ke halaman profil -->
                     <Link href="/profile" class="hover:underline">Profil</Link>
@@ -48,6 +48,11 @@ function logout() {
 
         <!-- Area konten utama: diisi oleh halaman yang memakai layout ini -->
         <main class="mx-auto max-w-7xl px-4 py-6">
+            <!-- Pesan sukses dari server (flash) -->
+            <p v-if="page.props.flash?.success" class="mb-4 rounded bg-green-50 px-4 py-2 text-sm text-green-700">
+                {{ page.props.flash.success }}
+            </p>
+
             <slot />
         </main>
     </div>
