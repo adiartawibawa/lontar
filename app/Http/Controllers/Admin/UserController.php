@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -44,6 +49,73 @@ class UserController extends Controller
             'users' => $users,
             'filters' => ['search' => $search],
         ]);
+    }
+
+    /**
+     * Halaman formulir pengguna baru.
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Users/Create', [
+            'roles' => Role::orderBy('name')->pluck('name'),
+        ]);
+    }
+
+    /**
+     * Menyimpan pengguna baru buatan admin.
+     * Email langsung dianggap terverifikasi karena admin yang menjamin alamatnya.
+     */
+    public function store(StoreUserRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $user = new User(Arr::only($data, ['first_name', 'last_name', 'username', 'email']));
+        $user->password = Hash::make($data['password']);
+        $user->email_verified_at = now();
+        $user->save();
+
+        $user->assignRole($data['role']);
+
+        return to_route('admin.users.index')->with('success', "Pengguna {$user->username} dibuat.");
+    }
+
+    /**
+     * Halaman formulir ubah pengguna.
+     */
+    public function edit(User $user): Response
+    {
+        return Inertia::render('Admin/Users/Edit', [
+            'user' => $this->toRow($user),
+            'roles' => Role::orderBy('name')->pluck('name'),
+        ]);
+    }
+
+    /**
+     * Menyimpan perubahan data, peran, dan (opsional) password pengguna.
+     */
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    {
+        $data = $request->validated();
+
+        // Aturan pengaman: admin aktif terakhir tidak boleh kehilangan peran admin,
+        // karena area admin akan terkunci untuk semua orang.
+        if ($data['role'] !== 'admin' && $user->isLastActiveAdmin()) {
+            throw ValidationException::withMessages([
+                'role' => 'Peran tidak dapat diubah karena ini satu-satunya admin aktif.',
+            ]);
+        }
+
+        $user->fill(Arr::only($data, ['first_name', 'last_name', 'username', 'email']));
+
+        // Password hanya diganti jika kolomnya diisi
+        if (! empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+        $user->syncRoles([$data['role']]); // mengganti peran lama dengan yang baru
+
+        return to_route('admin.users.index')->with('success', "Pengguna {$user->username} diperbarui.");
     }
 
     /**
