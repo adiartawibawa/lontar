@@ -1,24 +1,25 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { ChevronLeft, ChevronRight } from '@lucide/vue'
+import Button from '@/Components/ui/Button.vue'
 
 // Objek paginator dari Laravel (berisi from, to, total, prev_page_url, next_page_url)
-defineProps({ paginator: { type: Object, required: true } })
+defineProps({
+  paginator: { type: Object, required: true },
+})
 </script>
 
 <template>
-    <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
-        <!-- Ringkasan jumlah data -->
-        <p>Menampilkan {{ paginator.from ?? 0 }} sampai {{ paginator.to ?? 0 }} dari {{ paginator.total }}</p>
+  <div class="flex flex-col items-center justify-between gap-3 px-4 py-3 text-sm text-slate-500 dark:text-slate-400 sm:flex-row sm:px-5">
+    <!-- Ringkasan jumlah data -->
+    <p>Menampilkan {{ paginator.from ?? 0 }} sampai {{ paginator.to ?? 0 }} dari {{ paginator.total }}</p>
 
-        <div class="flex gap-2">
-            <!-- Tombol nonaktif jika tidak ada halaman sebelum/sesudahnya -->
-            <Link v-if="paginator.prev_page_url" :href="paginator.prev_page_url"
-                class="rounded border border-gray-300 px-3 py-1 hover:bg-gray-100">Sebelumnya</Link>
-            <span v-else class="rounded border border-gray-200 px-3 py-1 text-gray-400">Sebelumnya</span>
+    <div class="flex gap-2">
+      <!-- Tombol nonaktif jika tidak ada halaman sebelum/sesudahnya -->
+      <Button v-if="paginator.prev_page_url" variant="secondary" :href="paginator.prev_page_url" :icon="ChevronLeft">Sebelumnya</Button>
+      <Button v-else variant="secondary" disabled :icon="ChevronLeft">Sebelumnya</Button>
 
-            <Link v-if="paginator.next_page_url" :href="paginator.next_page_url"
-                class="rounded border border-gray-300 px-3 py-1 hover:bg-gray-100">Berikutnya</Link>
-            <span v-else class="rounded border border-gray-200 px-3 py-1 text-gray-400">Berikutnya</span>
-        </div>
+      <Button v-if="paginator.next_page_url" variant="secondary" :href="paginator.next_page_url" :icon="ChevronRight" trailing>Berikutnya</Button>
+      <Button v-else variant="secondary" disabled :icon="ChevronRight" trailing>Berikutnya</Button>
     </div>
+  </div>
 </template>

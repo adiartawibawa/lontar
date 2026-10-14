@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
+import { LayoutDashboard, LogIn, Menu, UserPlus, X } from '@lucide/vue'
 import BrandLogo from '@/Components/BrandLogo.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 
@@ -70,19 +71,25 @@ const socials = [
 
           <!-- Tamu: tombol Masuk dan Daftar. Pengguna login: tombol ke Dashboard -->
           <template v-if="!user">
-            <Link href="/login" class="hidden h-9 items-center rounded-lg bg-blue-50 px-4 text-sm font-semibold text-brand dark:bg-blue-500/15 dark:text-blue-400 sm:inline-flex">Masuk</Link>
-            <Link v-if="canRegister" href="/register" class="hidden h-9 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white hover:bg-blue-700 sm:inline-flex">Daftar</Link>
+            <Link href="/login" class="hidden h-9 items-center gap-2 rounded-lg bg-blue-50 px-4 text-sm font-semibold text-brand dark:bg-blue-500/15 dark:text-blue-400 sm:inline-flex">
+              <LogIn class="h-4 w-4" aria-hidden="true" />Masuk
+            </Link>
+            <Link v-if="canRegister" href="/register" class="hidden h-9 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-white hover:bg-blue-700 sm:inline-flex">
+              <UserPlus class="h-4 w-4" aria-hidden="true" />Daftar
+            </Link>
           </template>
-          <Link v-else href="/dashboard" class="hidden h-9 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white hover:bg-blue-700 sm:inline-flex">Dashboard</Link>
+          <Link v-else href="/dashboard" class="hidden h-9 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-white hover:bg-blue-700 sm:inline-flex">
+            <LayoutDashboard class="h-4 w-4" aria-hidden="true" />Dashboard
+          </Link>
 
           <button
             type="button"
             class="grid h-10 w-10 place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden"
-            aria-label="Buka menu"
+            :aria-label="menuOpen ? 'Tutup menu' : 'Buka menu'"
             :aria-expanded="menuOpen"
             @click="menuOpen = !menuOpen"
           >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            <component :is="menuOpen ? X : Menu" class="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
       </div>

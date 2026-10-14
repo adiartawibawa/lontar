@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import PublicLayout from '@/Layouts/PublicLayout.vue'
-import Icon from '@/Components/Icon.vue'
+import { RefreshCw, Search } from '@lucide/vue'
 import ArticleCard from '@/Components/Landing/ArticleCard.vue'
 import NewsletterBox from '@/Components/Landing/NewsletterBox.vue'
 import SectionHeading from '@/Components/Landing/SectionHeading.vue'
@@ -63,7 +63,7 @@ function loadMore() {
       <!-- Pencarian langsung: hasil menyesuaikan setiap ketikan -->
       <form class="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row" role="search" @submit.prevent>
         <label class="flex h-11 flex-1 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-          <Icon name="search" class="h-4 w-4 shrink-0 text-slate-400" />
+          <Search class="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
           <input v-model="query" class="w-full bg-transparent outline-none placeholder:text-slate-400" placeholder="Cari artikel atau kategori" aria-label="Cari artikel" />
         </label>
         <button type="submit" class="h-11 rounded-xl bg-brand px-6 text-sm font-semibold text-white hover:bg-blue-700">Cari</button>
@@ -88,7 +88,7 @@ function loadMore() {
           class="inline-flex h-11 items-center gap-2 rounded-xl bg-slate-100 px-6 text-sm font-semibold text-slate-800 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
           @click="loadMore"
         >
-          <Icon name="refresh" class="h-4 w-4" />Muat lebih banyak
+          <RefreshCw class="h-4 w-4" aria-hidden="true" />Muat lebih banyak
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <script setup>
-import Icon from '@/Components/Icon.vue'
+import { Eye, MousePointerClick, PenLine, TrendingDown, TrendingUp, UserRound } from '@lucide/vue'
 
 // Kartu statistik tunggal. trend: 'up' | 'down'; delta ditulis tanpa tanda (+/-).
 defineProps({
@@ -10,6 +10,9 @@ defineProps({
   icon: { type: String, required: true },
   tone: { type: String, default: 'blue' },
 })
+
+// Kunci ikon dari data (string, agar bisa dikirim dari server) menjadi komponen Lucide
+const icons = { eye: Eye, user: UserRound, click: MousePointerClick, pen: PenLine }
 
 // Warna ikon per nada. Ditulis lengkap agar terdeteksi Tailwind.
 const tones = {
@@ -31,14 +34,15 @@ const trends = {
     <div class="flex items-center justify-between text-sm font-semibold text-slate-900 dark:text-white">
       <span>{{ label }}</span>
       <span class="grid h-8 w-8 place-items-center rounded-lg" :class="tones[tone] ?? tones.blue">
-        <Icon :name="icon" class="h-4 w-4" />
+        <component :is="icons[icon] ?? Eye" class="h-4 w-4" aria-hidden="true" />
       </span>
     </div>
 
     <div class="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
       <span class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">{{ value }}</span>
-      <span class="rounded-md px-1.5 py-0.5 text-xs font-semibold" :class="trends[trend] ?? trends.up">
-        {{ trend === 'down' ? '▼' : '▲' }} {{ delta }}
+      <span class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold" :class="trends[trend] ?? trends.up">
+        <component :is="trend === 'down' ? TrendingDown : TrendingUp" class="h-3 w-3" aria-hidden="true" />
+        {{ delta }}
       </span>
     </div>
 

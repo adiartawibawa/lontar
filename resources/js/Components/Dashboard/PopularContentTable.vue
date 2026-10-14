@@ -1,14 +1,16 @@
 <script setup>
+import Badge from '@/Components/ui/Badge.vue'
+
 // Tabel "Konten terpopuler". rows: [{ title, author, reads, comments, status }]
 defineProps({
   rows: { type: Array, required: true },
 })
 
 // Warna lencana per status; kunci harus sama dengan nilai `status` pada data
-const statusClass = {
-  Terbit: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400',
-  Dijadwalkan: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
-  Draf: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+const statusTone = {
+  Terbit: 'green',
+  Dijadwalkan: 'amber',
+  Draf: 'slate',
 }
 </script>
 
@@ -41,7 +43,7 @@ const statusClass = {
             <td class="text-right tabular-nums">{{ row.reads }}</td>
             <td class="text-right tabular-nums">{{ row.comments }}</td>
             <td class="pr-4 text-right sm:pr-0">
-              <span class="rounded-md px-2 py-0.5 text-xs font-semibold" :class="statusClass[row.status] ?? statusClass.Draf">{{ row.status }}</span>
+              <Badge :tone="statusTone[row.status] ?? 'slate'">{{ row.status }}</Badge>
             </td>
           </tr>
         </tbody>

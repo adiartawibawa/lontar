@@ -1,4 +1,6 @@
 <script setup>
+import { ArrowUp } from '@lucide/vue'
+
 // Kartu "Asisten penulis": hanya tampilan. Kolom input belum terhubung ke fitur apa pun.
 </script>
 
@@ -14,7 +16,7 @@
     <label class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 pl-3 pr-1.5 text-sm dark:border-slate-700 dark:bg-slate-800/60">
       <input class="min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400" placeholder="Minta ide judul atau ringkasan…" />
       <button type="button" class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-white" aria-label="Kirim">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+        <ArrowUp class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
       </button>
     </label>
   </div>

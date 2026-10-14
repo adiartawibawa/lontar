@@ -1,85 +1,81 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import { AtSign, Lock, Mail, UserRound } from '@lucide/vue'
+import Button from '@/Components/ui/Button.vue'
+import Card from '@/Components/ui/Card.vue'
+import SelectField from '@/Components/ui/SelectField.vue'
+import TextField from '@/Components/ui/TextField.vue'
+import { roleLabel } from '@/lib/roles'
 
 /*
+ * Formulir pengguna yang dipakai bersama oleh halaman tambah dan ubah.
  * form: objek useForm milik halaman induk (field dan error ada di sini).
  * Catatan: v-model di bawah mengubah properti objek `form`; ini disengaja
  * karena objek tersebut memang dimiliki dan dikendalikan halaman induk.
  */
-defineProps({
-    form: { type: Object, required: true },
-    roles: { type: Array, required: true }, // daftar nama peran
-    passwordRequired: { type: Boolean, default: false }, // wajib saat tambah, opsional saat ubah
-    submitLabel: { type: String, default: 'Simpan' },
+const props = defineProps({
+  form: { type: Object, required: true },
+  roles: { type: Array, required: true }, // daftar nama peran dari server
+  passwordRequired: { type: Boolean, default: false }, // wajib saat tambah, opsional saat ubah
+  submitLabel: { type: String, default: 'Simpan' },
+  submitIcon: { type: [Object, Function], default: null },
 })
 
 // Halaman induk menangani pengiriman data
 defineEmits(['submit'])
+
+// Pilihan peran dengan label bahasa Indonesia
+const roleOptions = computed(() => props.roles.map((name) => ({ value: name, label: roleLabel(name) })))
 </script>
 
 <template>
-    <form class="max-w-xl space-y-4 rounded-lg bg-white p-6 shadow" @submit.prevent="$emit('submit')">
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label for="first_name" class="block text-sm font-medium text-gray-700">Nama depan</label>
-                <input id="first_name" v-model="form.first_name" type="text" required
-                    class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-                <p v-if="form.errors.first_name" class="mt-1 text-sm text-red-600">{{ form.errors.first_name }}</p>
-            </div>
-            <div>
-                <label for="last_name" class="block text-sm font-medium text-gray-700">Nama belakang</label>
-                <input id="last_name" v-model="form.last_name" type="text" required
-                    class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-                <p v-if="form.errors.last_name" class="mt-1 text-sm text-red-600">{{ form.errors.last_name }}</p>
-            </div>
+  <form class="max-w-2xl" @submit.prevent="$emit('submit')">
+    <Card>
+      <div class="space-y-4">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <TextField v-model="form.first_name" label="Nama depan" :icon="UserRound" :error="form.errors.first_name" required />
+          <TextField v-model="form.last_name" label="Nama belakang" :error="form.errors.last_name" required />
         </div>
 
-        <div>
-            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-            <input id="username" v-model="form.username" type="text" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.username" class="mt-1 text-sm text-red-600">{{ form.errors.username }}</p>
-        </div>
+        <TextField
+          v-model="form.username"
+          label="Username"
+          :icon="AtSign"
+          :error="form.errors.username"
+          hint="Huruf, angka, strip, dan underscore; tanpa karakter @."
+          required
+        />
 
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input id="email" v-model="form.email" type="email" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
-        </div>
+        <TextField v-model="form.email" type="email" label="Email" :icon="Mail" :error="form.errors.email" required />
 
-        <div>
-            <label for="role" class="block text-sm font-medium text-gray-700">Peran</label>
-            <select id="role" v-model="form.role" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 capitalize">
-                <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
-            </select>
-            <p v-if="form.errors.role" class="mt-1 text-sm text-red-600">{{ form.errors.role }}</p>
-        </div>
+        <SelectField v-model="form.role" label="Peran" :options="roleOptions" :error="form.errors.role" required />
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">
-                Password {{ passwordRequired ? '' : '(kosongkan jika tidak diganti)' }}
-            </label>
-            <input id="password" v-model="form.password" type="password" autocomplete="new-password"
-                :required="passwordRequired" class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <TextField
+            v-model="form.password"
+            type="password"
+            :label="passwordRequired ? 'Password' : 'Password baru'"
+            :icon="Lock"
+            :error="form.errors.password"
+            :hint="passwordRequired ? 'Minimal 8 karakter.' : 'Kosongkan jika tidak ingin mengganti.'"
+            autocomplete="new-password"
+            :required="passwordRequired"
+          />
+          <TextField
+            v-model="form.password_confirmation"
+            type="password"
+            label="Ulangi password"
+            :icon="Lock"
+            autocomplete="new-password"
+            :required="passwordRequired"
+          />
         </div>
+      </div>
 
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi
-                password</label>
-            <input id="password_confirmation" v-model="form.password_confirmation" type="password"
-                autocomplete="new-password" :required="passwordRequired"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-        </div>
-
-        <div class="flex items-center gap-4">
-            <button type="submit" :disabled="form.processing"
-                class="rounded bg-gray-800 px-4 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
-                {{ submitLabel }}
-            </button>
-            <Link href="/admin/users" class="text-sm text-gray-600 hover:underline">Batal</Link>
-        </div>
-    </form>
+      <div class="mt-6 flex items-center gap-3 border-t border-slate-100 pt-5 dark:border-slate-800">
+        <Button type="submit" size="lg" :icon="submitIcon" :loading="form.processing">{{ submitLabel }}</Button>
+        <Button variant="secondary" size="lg" href="/admin/users">Batal</Button>
+      </div>
+    </Card>
+  </form>
 </template>
