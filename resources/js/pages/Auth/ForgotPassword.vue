@@ -1,6 +1,11 @@
 <script setup>
-import { useForm, Head, Link } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import { ArrowLeft, KeyRound, Mail, Send } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
+import Alert from '@/Components/ui/Alert.vue'
+import AuthHeading from '@/Components/ui/AuthHeading.vue'
+import Button from '@/Components/ui/Button.vue'
+import TextField from '@/Components/ui/TextField.vue'
 
 defineOptions({ layout: GuestLayout })
 
@@ -14,35 +19,40 @@ const form = useForm({ email: '' })
  * Meminta tautan reset ke rute POST /forgot-password milik Fortify.
  */
 function submit() {
-    form.post('/forgot-password')
+  form.post('/forgot-password')
 }
 </script>
 
 <template>
+  <Head title="Lupa password" />
 
-    <Head title="Lupa Password" />
+  <AuthHeading
+    :icon="KeyRound"
+    title="Atur ulang password"
+    description="Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat password baru."
+  />
 
-    <form class="space-y-4" @submit.prevent="submit">
-        <p class="text-sm text-gray-600">
-            Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat password baru.
-        </p>
+  <Alert v-if="status" variant="success" class="mb-4">{{ status }}</Alert>
 
-        <p v-if="status" class="text-sm text-green-600">{{ status }}</p>
+  <form class="space-y-4" @submit.prevent="submit">
+    <TextField
+      v-model="form.email"
+      type="email"
+      label="Email"
+      :icon="Mail"
+      :error="form.errors.email"
+      autocomplete="email"
+      required
+      autofocus
+    />
 
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input id="email" v-model="form.email" type="email" autocomplete="email" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
-        </div>
+    <Button type="submit" size="lg" block :icon="Send" :loading="form.processing">Kirim tautan reset</Button>
+  </form>
 
-        <button type="submit" :disabled="form.processing"
-            class="w-full rounded bg-gray-800 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
-            Kirim tautan reset
-        </button>
-
-        <div class="text-center text-sm">
-            <Link href="/login" class="text-gray-600 hover:underline">Kembali ke halaman masuk</Link>
-        </div>
-    </form>
+  <p class="mt-6 text-center text-sm">
+    <Link href="/login" class="inline-flex items-center gap-1.5 font-semibold text-brand hover:underline">
+      <ArrowLeft class="h-4 w-4" aria-hidden="true" />
+      Kembali ke halaman masuk
+    </Link>
+  </p>
 </template>

@@ -1,21 +1,25 @@
 <script setup>
-import { useForm, Head } from '@inertiajs/vue3'
+import { Head, useForm } from '@inertiajs/vue3'
+import { Lock, Mail, ShieldCheck } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
+import AuthHeading from '@/Components/ui/AuthHeading.vue'
+import Button from '@/Components/ui/Button.vue'
+import TextField from '@/Components/ui/TextField.vue'
 
 defineOptions({ layout: GuestLayout })
 
 // token dan email berasal dari tautan di email reset
 const props = defineProps({
-    token: String,
-    email: String,
+  token: String,
+  email: String,
 })
 
 // Semua field yang dibutuhkan endpoint POST /reset-password milik Fortify
 const form = useForm({
-    token: props.token,
-    email: props.email,
-    password: '',
-    password_confirmation: '',
+  token: props.token,
+  email: props.email,
+  password: '',
+  password_confirmation: '',
 })
 
 /**
@@ -23,44 +27,42 @@ const form = useForm({
  * Jika berhasil, Fortify mengarahkan pengguna ke halaman login.
  */
 function submit() {
-    form.post('/reset-password', {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    })
+  form.post('/reset-password', {
+    onFinish: () => form.reset('password', 'password_confirmation'),
+  })
 }
 </script>
 
 <template>
+  <Head title="Buat password baru" />
 
-    <Head title="Reset Password" />
+  <AuthHeading :icon="ShieldCheck" title="Buat password baru" description="Pilih password baru yang belum pernah Anda pakai di tempat lain." />
 
-    <form class="space-y-4" @submit.prevent="submit">
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <!-- Email dikunci karena sudah ditentukan oleh tautan reset -->
-            <input id="email" v-model="form.email" type="email" readonly
-                class="mt-1 w-full rounded border border-gray-300 bg-gray-50 px-3 py-2" />
-            <!-- Error token kedaluwarsa atau tidak valid juga muncul pada key `email` -->
-            <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
-        </div>
+  <form class="space-y-4" @submit.prevent="submit">
+    <!-- Email dikunci karena sudah ditentukan oleh tautan reset; token kedaluwarsa juga dilaporkan di sini -->
+    <TextField v-model="form.email" type="email" label="Email" :icon="Mail" :error="form.errors.email" readonly />
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password baru</label>
-            <input id="password" v-model="form.password" type="password" autocomplete="new-password" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>
-        </div>
+    <TextField
+      v-model="form.password"
+      type="password"
+      label="Password baru"
+      :icon="Lock"
+      :error="form.errors.password"
+      hint="Minimal 8 karakter."
+      autocomplete="new-password"
+      required
+      autofocus
+    />
 
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
-                Konfirmasi password baru
-            </label>
-            <input id="password_confirmation" v-model="form.password_confirmation" type="password"
-                autocomplete="new-password" required class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-        </div>
+    <TextField
+      v-model="form.password_confirmation"
+      type="password"
+      label="Ulangi password baru"
+      :icon="Lock"
+      autocomplete="new-password"
+      required
+    />
 
-        <button type="submit" :disabled="form.processing"
-            class="w-full rounded bg-gray-800 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
-            Simpan password baru
-        </button>
-    </form>
+    <Button type="submit" size="lg" block :icon="ShieldCheck" :loading="form.processing">Simpan password baru</Button>
+  </form>
 </template>

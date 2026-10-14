@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { TrendingUp } from '@lucide/vue'
 
 /*
  * Kartu "Total pembaca": angka total, grafik area, dan tiga ringkasan.
@@ -53,7 +54,9 @@ const miniTones = {
     <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:gap-6">
       <div class="shrink-0 sm:w-40">
         <p class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">{{ total }}</p>
-        <span class="mt-2 inline-block rounded-md bg-emerald-100 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">▲ {{ delta }}</span>
+        <span class="mt-2 inline-flex items-center gap-1 rounded-md bg-emerald-100 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
+          <TrendingUp class="h-3 w-3" aria-hidden="true" />{{ delta }}
+        </span>
         <span class="ml-1 text-xs text-slate-400">vs. periode lalu</span>
       </div>
 

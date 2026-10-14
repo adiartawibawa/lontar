@@ -1,22 +1,28 @@
 <script setup>
-import { useForm, Head, Link } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Lock, LogIn, UserRound } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
+import Alert from '@/Components/ui/Alert.vue'
+import AuthHeading from '@/Components/ui/AuthHeading.vue'
+import Button from '@/Components/ui/Button.vue'
+import Checkbox from '@/Components/ui/Checkbox.vue'
+import TextField from '@/Components/ui/TextField.vue'
 
 // Halaman ini tampil di dalam layout tamu
 defineOptions({ layout: GuestLayout })
 
-// Pesan status dari server (misalnya setelah reset password)
+// status: pesan dari server; canResetPassword/canRegister: tampilkan tautan atau tidak
 defineProps({
-    status: String,
-    canResetPassword: Boolean,
-    canRegister: Boolean,
+  status: String,
+  canResetPassword: Boolean,
+  canRegister: Boolean,
 })
 
-// Form reaktif: menyimpan input, error validasi, dan status pengiriman
+// Form reaktif: `login` dapat berisi email atau username
 const form = useForm({
-    login: '',
-    password: '',
-    remember: false,
+  login: '',
+  password: '',
+  remember: false,
 })
 
 /**
@@ -24,52 +30,56 @@ const form = useForm({
  * Setelah selesai (berhasil atau gagal), password dikosongkan demi keamanan.
  */
 function submit() {
-    form.post('/login', {
-        onFinish: () => form.reset('password'),
-    })
+  form.post('/login', {
+    onFinish: () => form.reset('password'),
+  })
 }
 </script>
 
 <template>
+  <Head title="Masuk" />
 
-    <Head title="Masuk" />
+  <AuthHeading :icon="LogIn" title="Masuk ke akun Anda" description="Gunakan email atau username yang terdaftar." />
 
-    <form class="space-y-4" @submit.prevent="submit">
-        <p v-if="status" class="text-sm text-green-600">{{ status }}</p>
+  <!-- Pesan dari server, mis. password berhasil direset atau akun dinonaktifkan -->
+  <Alert v-if="status" class="mb-4">{{ status }}</Alert>
 
-        <div>
-            <label for="login" class="block text-sm font-medium text-gray-700">Email atau username</label>
-            <input id="login" v-model="form.login" type="text" autocomplete="username" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <!-- Error dari server (kredensial salah) muncul pada key `login` -->
-            <p v-if="form.errors.login" class="mt-1 text-sm text-red-600">{{ form.errors.login }}</p>
-        </div>
+  <form class="space-y-4" @submit.prevent="submit">
+    <TextField
+      v-model="form.login"
+      label="Email atau username"
+      :icon="UserRound"
+      :error="form.errors.login"
+      autocomplete="username"
+      required
+      autofocus
+    />
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input id="password" v-model="form.password" type="password" autocomplete="current-password" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-        </div>
+    <TextField
+      v-model="form.password"
+      type="password"
+      label="Password"
+      :icon="Lock"
+      :error="form.errors.password"
+      autocomplete="current-password"
+      required
+    />
 
-        <div class="flex items-center justify-between text-sm">
-            <label class="flex items-center gap-2 text-gray-600">
-                <input v-model="form.remember" type="checkbox" /> Ingat saya
-            </label>
+    <div class="flex items-center justify-between">
+      <Checkbox v-model="form.remember">Ingat saya</Checkbox>
 
-            <!-- Hanya tampil bila fitur reset password aktif -->
-            <Link v-if="canResetPassword" href="/forgot-password" class="text-gray-600 hover:underline">
-                Lupa password?
-            </Link>
-        </div>
+      <!-- Hanya tampil bila fitur reset password aktif -->
+      <Link v-if="canResetPassword" href="/forgot-password" class="text-sm font-semibold text-brand hover:underline">
+        Lupa password?
+      </Link>
+    </div>
 
-        <button type="submit" :disabled="form.processing"
-            class="w-full rounded bg-gray-800 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
-            Masuk
-        </button>
+    <Button type="submit" size="lg" block :icon="LogIn" :loading="form.processing">Masuk</Button>
+  </form>
 
-        <!-- Tampil hanya jika fitur registrasi aktif di config Fortify -->
-        <div v-if="canRegister" class="text-center text-sm">
-            <Link href="/register" class="text-gray-600 hover:underline">Belum punya akun? Daftar</Link>
-        </div>
-    </form>
+  <!-- Tampil hanya jika fitur registrasi aktif di config Fortify -->
+  <p v-if="canRegister" class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+    Belum punya akun?
+    <Link href="/register" class="font-semibold text-brand hover:underline">Daftar</Link>
+  </p>
 </template>

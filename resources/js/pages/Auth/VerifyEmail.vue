@@ -1,7 +1,11 @@
 <script setup>
 import { computed } from 'vue'
-import { useForm, router, Head } from '@inertiajs/vue3'
+import { Head, router, useForm } from '@inertiajs/vue3'
+import { LogOut, MailCheck, Send } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
+import Alert from '@/Components/ui/Alert.vue'
+import AuthHeading from '@/Components/ui/AuthHeading.vue'
+import Button from '@/Components/ui/Button.vue'
 
 defineOptions({ layout: GuestLayout })
 
@@ -18,40 +22,32 @@ const linkSent = computed(() => props.status === 'verification-link-sent')
  * Meminta tautan verifikasi baru lewat POST /email/verification-notification.
  */
 function resend() {
-    form.post('/email/verification-notification')
+  form.post('/email/verification-notification')
 }
 
 /**
- * Keluar dari akun (pengguna belum terverifikasi tetap bisa logout).
+ * Keluar dari akun (pengguna belum terverifikasi tetap bisa keluar).
  */
 function logout() {
-    router.post('/logout')
+  router.post('/logout')
 }
 </script>
 
 <template>
+  <Head title="Verifikasi email" />
 
-    <Head title="Verifikasi Email" />
+  <AuthHeading
+    :icon="MailCheck"
+    title="Periksa email Anda"
+    description="Kami mengirim tautan aktivasi ke email Anda. Klik tautan itu untuk mengaktifkan akun."
+  />
 
-    <div class="space-y-4">
-        <p class="text-sm text-gray-600">
-            Kami telah mengirim tautan verifikasi ke email Anda. Klik tautan tersebut
-            untuk mengaktifkan akun. Belum menerima emailnya? Kami dapat mengirim ulang.
-        </p>
+  <Alert v-if="linkSent" variant="success" class="mb-4">Tautan aktivasi baru sudah dikirim ke email Anda.</Alert>
 
-        <p v-if="linkSent" class="text-sm text-green-600">
-            Tautan verifikasi baru telah dikirim ke email Anda.
-        </p>
+  <p class="text-sm text-slate-500 dark:text-slate-400">Belum menerima emailnya? Periksa folder spam, atau minta tautan baru.</p>
 
-        <div class="flex items-center justify-between">
-            <button type="button" :disabled="form.processing"
-                class="rounded bg-gray-800 px-4 py-2 text-white hover:bg-gray-700 disabled:opacity-50" @click="resend">
-                Kirim ulang tautan
-            </button>
-
-            <button type="button" class="text-sm text-gray-600 hover:underline" @click="logout">
-                Keluar
-            </button>
-        </div>
-    </div>
+  <div class="mt-5 flex items-center justify-between gap-3">
+    <Button size="lg" :icon="Send" :loading="form.processing" @click="resend">Kirim ulang tautan</Button>
+    <Button variant="ghost" size="lg" :icon="LogOut" @click="logout">Keluar</Button>
+  </div>
 </template>

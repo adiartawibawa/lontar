@@ -1,17 +1,21 @@
 <script setup>
-import { useForm, Head, Link } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import { AtSign, Lock, Mail, UserPlus, UserRound } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
+import AuthHeading from '@/Components/ui/AuthHeading.vue'
+import Button from '@/Components/ui/Button.vue'
+import TextField from '@/Components/ui/TextField.vue'
 
 defineOptions({ layout: GuestLayout })
 
 // Semua field yang dibutuhkan CreateNewUser
 const form = useForm({
-    first_name: '',
-    last_name: '',
-    username: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+  first_name: '',
+  last_name: '',
+  username: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
 })
 
 /**
@@ -19,68 +23,60 @@ const form = useForm({
  * Jika berhasil, pengguna otomatis login dan diarahkan ke halaman verifikasi email.
  */
 function submit() {
-    form.post('/register', {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    })
+  form.post('/register', {
+    onFinish: () => form.reset('password', 'password_confirmation'),
+  })
 }
 </script>
 
 <template>
+  <Head title="Daftar" />
 
-    <Head title="Daftar" />
+  <AuthHeading :icon="UserPlus" title="Buat akun baru" description="Kami akan mengirim tautan aktivasi ke email Anda." />
 
-    <form class="space-y-4" @submit.prevent="submit">
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label for="first_name" class="block text-sm font-medium text-gray-700">Nama depan</label>
-                <input id="first_name" v-model="form.first_name" type="text" required
-                    class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-                <p v-if="form.errors.first_name" class="mt-1 text-sm text-red-600">{{ form.errors.first_name }}</p>
-            </div>
+  <form class="space-y-4" @submit.prevent="submit">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <TextField v-model="form.first_name" label="Nama depan" :icon="UserRound" :error="form.errors.first_name" autocomplete="given-name" required />
+      <TextField v-model="form.last_name" label="Nama belakang" :error="form.errors.last_name" autocomplete="family-name" required />
+    </div>
 
-            <div>
-                <label for="last_name" class="block text-sm font-medium text-gray-700">Nama belakang</label>
-                <input id="last_name" v-model="form.last_name" type="text" required
-                    class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-                <p v-if="form.errors.last_name" class="mt-1 text-sm text-red-600">{{ form.errors.last_name }}</p>
-            </div>
-        </div>
+    <TextField
+      v-model="form.username"
+      label="Username"
+      :icon="AtSign"
+      :error="form.errors.username"
+      hint="Huruf, angka, strip, dan underscore; tanpa karakter @."
+      autocomplete="username"
+      required
+    />
 
-        <div>
-            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-            <input id="username" v-model="form.username" type="text" autocomplete="username" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.username" class="mt-1 text-sm text-red-600">{{ form.errors.username }}</p>
-        </div>
+    <TextField v-model="form.email" type="email" label="Email" :icon="Mail" :error="form.errors.email" autocomplete="email" required />
 
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input id="email" v-model="form.email" type="email" autocomplete="email" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
-        </div>
+    <TextField
+      v-model="form.password"
+      type="password"
+      label="Password"
+      :icon="Lock"
+      :error="form.errors.password"
+      hint="Minimal 8 karakter."
+      autocomplete="new-password"
+      required
+    />
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input id="password" v-model="form.password" type="password" autocomplete="new-password" required
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-            <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>
-        </div>
+    <TextField
+      v-model="form.password_confirmation"
+      type="password"
+      label="Ulangi password"
+      :icon="Lock"
+      autocomplete="new-password"
+      required
+    />
 
-        <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi
-                password</label>
-            <input id="password_confirmation" v-model="form.password_confirmation" type="password"
-                autocomplete="new-password" required class="mt-1 w-full rounded border border-gray-300 px-3 py-2" />
-        </div>
+    <Button type="submit" size="lg" block :icon="UserPlus" :loading="form.processing">Daftar</Button>
+  </form>
 
-        <button type="submit" :disabled="form.processing"
-            class="w-full rounded bg-gray-800 py-2 text-white hover:bg-gray-700 disabled:opacity-50">
-            Daftar
-        </button>
-
-        <div class="text-center text-sm">
-            <Link href="/login" class="text-gray-600 hover:underline">Sudah punya akun? Masuk</Link>
-        </div>
-    </form>
+  <p class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+    Sudah punya akun?
+    <Link href="/login" class="font-semibold text-brand hover:underline">Masuk</Link>
+  </p>
 </template>
