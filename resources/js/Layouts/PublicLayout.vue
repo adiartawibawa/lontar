@@ -144,7 +144,7 @@ const socials = [
           <h3 class="font-bold text-slate-900 dark:text-white">Surel</h3>
           <!-- Formulir kontak: hanya tampilan, belum mengirim apa pun -->
           <form class="mt-3 flex gap-2" @submit.prevent>
-            <input type="email" class="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 outline-none placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950" placeholder="nama@email.com" aria-label="Surel" />
+            <input type="email" class="field-ring h-10 min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-blue-500/25 dark:border-slate-700 dark:bg-slate-950" placeholder="nama@email.com" aria-label="Surel" />
             <button type="submit" class="h-10 rounded-lg bg-brand px-4 font-semibold text-white">Kirim</button>
           </form>
           <div class="mt-4 flex gap-2 text-xs font-bold">

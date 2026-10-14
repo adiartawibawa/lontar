@@ -27,7 +27,7 @@ function submit() {
         v-model="email"
         type="email"
         required
-        class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950"
+        class="field-ring h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-blue-500/25 dark:border-slate-700 dark:bg-slate-950"
         placeholder="nama@email.com"
         aria-label="Alamat surel"
       />

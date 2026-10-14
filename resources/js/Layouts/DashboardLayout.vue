@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { Bell, LogOut, Menu, Search, UserRound, X } from '@lucide/vue'
 import BrandLogo from '@/Components/BrandLogo.vue'
+import SidebarMenu from '@/Components/Navigation/SidebarMenu.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import Alert from '@/Components/ui/Alert.vue'
 import { navigation } from '@/lib/navigation'
@@ -13,37 +14,14 @@ import { navigation } from '@/lib/navigation'
  */
 const page = usePage()
 
-// Pengguna yang login dan permission miliknya (dibagikan HandleInertiaRequests)
+// Pengguna yang login (dibagikan oleh HandleInertiaRequests)
 const user = computed(() => page.props.auth.user)
-const permissions = computed(() => page.props.auth.permissions ?? [])
 
 // Nama lengkap dan inisial untuk avatar
 const fullName = computed(() => `${user.value.first_name} ${user.value.last_name}`)
 const initials = computed(
   () => `${user.value.first_name?.[0] ?? ''}${user.value.last_name?.[0] ?? ''}`.toUpperCase(),
 )
-
-// Menu yang ditampilkan: item ber-permission hanya untuk pengguna yang berhak.
-// Ini hanya pengaturan tampilan; akses tetap dijaga middleware di server.
-const menu = computed(() =>
-  navigation.filter((item) => !item.permission || permissions.value.includes(item.permission)),
-)
-
-/**
- * Menentukan apakah sebuah menu sedang aktif berdasarkan URL halaman.
- */
-function isActive(item) {
-  if (!item.href) return false
-
-  const path = page.url.split('?')[0]
-
-  return item.exact ? path === item.href : path.startsWith(item.href)
-}
-
-// Gaya menu: dasar, aktif, dan tidak aktif (ditulis lengkap agar terdeteksi Tailwind)
-const itemBase = 'flex h-10 items-center gap-3 rounded-xl px-3'
-const itemActive = 'bg-blue-50 text-brand dark:bg-blue-500/15 dark:text-blue-400'
-const itemIdle = 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
 
 // Status laci sidebar (layar kecil) dan menu pengguna
 const sidebarOpen = ref(false)
@@ -102,7 +80,6 @@ function logout() {
     <aside
       class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white p-4 transition-transform duration-200 dark:border-slate-800 dark:bg-slate-900 lg:translate-x-0"
       :class="{ '-translate-x-full': !sidebarOpen }"
-      aria-label="Navigasi utama"
     >
       <div class="flex h-10 items-center justify-between px-2">
         <Link href="/dashboard"><BrandLogo /></Link>
@@ -116,31 +93,8 @@ function logout() {
         </button>
       </div>
 
-      <nav class="mt-6 flex-1 space-y-1 overflow-y-auto text-sm font-medium">
-        <template v-for="item in menu" :key="item.key">
-          <!-- Menu yang sudah punya halaman -->
-          <Link
-            v-if="item.href"
-            :href="item.href"
-            :class="[itemBase, isActive(item) ? itemActive : itemIdle]"
-            :aria-current="isActive(item) ? 'page' : undefined"
-          >
-            <component :is="item.icon" class="h-[18px] w-[18px]" aria-hidden="true" />
-            <span class="flex-1">{{ item.label }}</span>
-          </Link>
-
-          <!-- Menu yang fiturnya belum dibangun: tampil redup dan tidak bisa diklik -->
-          <span
-            v-else
-            :class="[itemBase, 'cursor-not-allowed text-slate-600 opacity-50 dark:text-slate-400']"
-            aria-disabled="true"
-            title="Segera hadir"
-          >
-            <component :is="item.icon" class="h-[18px] w-[18px]" aria-hidden="true" />
-            <span class="flex-1">{{ item.label }}</span>
-          </span>
-        </template>
-      </nav>
+      <!-- Menu: judul bagian, menu bertingkat, dan penanda menu aktif -->
+      <SidebarMenu :sections="navigation" class="mt-4" />
     </aside>
 
     <div class="min-h-screen lg:pl-64">
@@ -156,9 +110,9 @@ function logout() {
         </button>
 
         <!-- Kolom pencarian: hanya tampilan, belum terhubung ke fitur pencarian -->
-        <label class="flex h-10 max-w-xs flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm dark:border-slate-700 dark:bg-slate-800/60">
+        <label class="flex h-10 max-w-xs flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm focus-within:border-brand focus-within:ring-2 focus-within:ring-blue-500/25 dark:border-slate-700 dark:bg-slate-800/60">
           <Search class="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
-          <input class="w-full bg-transparent outline-none placeholder:text-slate-400" placeholder="Cari artikel, halaman, penulis…" />
+          <input class="field-input w-full placeholder:text-slate-400" placeholder="Cari artikel, halaman, penulis…" />
         </label>
 
         <div class="ml-auto flex items-center gap-1.5 sm:gap-2">

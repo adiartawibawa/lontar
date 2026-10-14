@@ -66,7 +66,7 @@ const describedBy = computed(() => {
         v-model="model"
         v-bind="inputAttrs"
         :type="inputType"
-        class="h-full min-w-0 flex-1 bg-transparent text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+        class="field-input h-full min-w-0 flex-1 text-slate-900 placeholder:text-slate-400 dark:text-slate-100"
         :aria-invalid="error ? 'true' : undefined"
         :aria-describedby="describedBy"
       />

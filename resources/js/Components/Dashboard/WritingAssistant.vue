@@ -13,8 +13,8 @@ import { ArrowUp } from '@lucide/vue'
       <div class="h-20 w-20 rounded-full bg-[radial-gradient(circle_at_30%_30%,#93c5fd,#2563eb_55%,#1e3a8a)] shadow-[0_12px_32px_-6px_rgba(37,99,235,.6)]"></div>
     </div>
 
-    <label class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 pl-3 pr-1.5 text-sm dark:border-slate-700 dark:bg-slate-800/60">
-      <input class="min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400" placeholder="Minta ide judul atau ringkasan…" />
+    <label class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 pl-3 pr-1.5 text-sm focus-within:border-brand focus-within:ring-2 focus-within:ring-blue-500/25 dark:border-slate-700 dark:bg-slate-800/60">
+      <input class="field-input min-w-0 flex-1 placeholder:text-slate-400" placeholder="Minta ide judul atau ringkasan…" />
       <button type="button" class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-white" aria-label="Kirim">
         <ArrowUp class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
       </button>

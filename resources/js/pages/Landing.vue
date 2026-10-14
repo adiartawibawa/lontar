@@ -62,9 +62,9 @@ function loadMore() {
 
       <!-- Pencarian langsung: hasil menyesuaikan setiap ketikan -->
       <form class="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row" role="search" @submit.prevent>
-        <label class="flex h-11 flex-1 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900">
+        <label class="flex h-11 flex-1 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm focus-within:border-brand focus-within:ring-2 focus-within:ring-blue-500/25 dark:border-slate-700 dark:bg-slate-900">
           <Search class="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
-          <input v-model="query" class="w-full bg-transparent outline-none placeholder:text-slate-400" placeholder="Cari artikel atau kategori" aria-label="Cari artikel" />
+          <input v-model="query" class="field-input w-full placeholder:text-slate-400" placeholder="Cari artikel atau kategori" aria-label="Cari artikel" />
         </label>
         <button type="submit" class="h-11 rounded-xl bg-brand px-6 text-sm font-semibold text-white hover:bg-blue-700">Cari</button>
       </form>

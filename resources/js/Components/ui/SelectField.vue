@@ -27,7 +27,7 @@ const id = useId()
         :id="id"
         v-model="model"
         :required="required"
-        class="h-11 w-full appearance-none rounded-xl border bg-white pl-3.5 pr-10 text-sm text-slate-900 outline-none transition-colors focus:ring-2 dark:bg-slate-900 dark:text-slate-100"
+        class="field-ring h-11 w-full appearance-none rounded-xl border bg-white bg-none pl-3.5 pr-10 text-sm text-slate-900 outline-none transition-colors focus:ring-2 dark:bg-slate-900 dark:text-slate-100"
         :class="error
           ? 'border-rose-400 focus:ring-rose-500/25 dark:border-rose-500/70'
           : 'border-slate-300 focus:border-brand focus:ring-blue-500/25 dark:border-slate-700'"
